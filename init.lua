@@ -100,6 +100,13 @@ a.nvim_create_autocmd('TermOpen', {
   command  = 'startinsert | set winfixheight'
 })
 
+-- close terminal buffers after shell dies
+a.nvim_create_autocmd('TermClose', {
+  group = 'bufcheck',
+  pattern = 'term://*',
+  command = 'call nvim_input("<CR>")'
+})
+
 -- start git messages in insert mode
 a.nvim_create_autocmd('FileType', {
   group    = 'bufcheck',
@@ -113,8 +120,11 @@ a.nvim_create_autocmd('FileType', {
 local default_opts = { noremap = true, silent = true }
 local expr_opts = { noremap = true, expr = true, silent = true }
 
--- use esc to close term
-a.nvim_set_keymap("t", "<ESC>", "<C-d>", default_opts)
+-- esc to go to normal mode in term bufers
+a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", default_opts)
+
+-- open term buffer
+a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", default_opts)
 
 -- open file viewer
 a.nvim_set_keymap("n", "<C-e>", ":Explore<CR>", default_opts)
@@ -232,6 +242,17 @@ custom.inactive = {
   z = { bg = colors.grey },
 }
 
+local function diff_source()
+  local gitsigns = vim.b.gitsigns_status_dict
+  if gitsigns then
+    return {
+      added = gitsigns.added,
+      modified = gitsigns.changed,
+      removed = gitsigns.removed
+    }
+  end
+end
+
 require('lualine').setup {
   options = {
     icons_enabled = false,
@@ -268,7 +289,7 @@ require('lualine').setup {
         }
       }
     },
-    lualine_c = {'diff'},
+    lualine_c = { { 'diff', source = diff_source } },
     lualine_x = {
       { 'fileformat',
         color = { gui = 'bold' }
@@ -462,6 +483,7 @@ return require('packer').startup(function(use)
         exclude_filetypes = { 
           "netrw",
           "help",
+          "term",
           "packer",
         },
       })
