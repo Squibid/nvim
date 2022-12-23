@@ -484,6 +484,7 @@ return require('packer').startup(function(use)
           "netrw",
           "help",
           "term",
+          "gitcommit",
           "packer",
         },
       })
