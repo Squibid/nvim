@@ -134,10 +134,16 @@ a.nvim_set_keymap("n", "<S-e>", ":Sexplore<CR>", default_opts)
 a.nvim_set_keymap("n", "<ESC>", ":nohlsearch<Bar>:echo<CR>", default_opts)
 
 -- Resizing panes
-a.nvim_set_keymap("n", "<C-h>", ":vertical resize -1<CR>", default_opts)
-a.nvim_set_keymap("n", "<C-l>", ":vertical resize +1<CR>", default_opts)
-a.nvim_set_keymap("n", "<C-k>", ":resize +1<CR>", default_opts)
-a.nvim_set_keymap("n", "<C-j>", ":resize -1<CR>", default_opts)
+a.nvim_set_keymap("n", '<S-h>', "<cmd>SmartResizeLeft<CR>", default_opts)
+a.nvim_set_keymap("n", '<S-j>', "<cmd>SmartResizeDown<CR>", default_opts)
+a.nvim_set_keymap("n", '<S-k>', "<cmd>SmartResizeUp<CR>", default_opts)
+a.nvim_set_keymap("n", '<S-l>', "<cmd>SmartResizeRight<CR>", default_opts)
+
+-- moving between splits
+a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartCursorMoveLeft<CR>", default_opts)
+a.nvim_set_keymap("n", '<C-j>', "<cmd>SmartCursorMoveDown<CR>", default_opts)
+a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartCursorMoveUp<CR>", default_opts)
+a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartCursorMoveRight<CR>", default_opts)
 
 -- don't blame me pls
 local title = "Nvim"
@@ -504,6 +510,7 @@ return require('packer').startup(function(use)
   use { 'stevearc/stickybuf.nvim',
     config = function() require('stickybuf').setup() end
   }
+  use 'mrjones2014/smart-splits.nvim'
 
   -- completion
   use { 'hrsh7th/nvim-cmp',
