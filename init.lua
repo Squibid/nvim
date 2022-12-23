@@ -154,12 +154,12 @@ a.nvim_set_keymap("n", "<C-g>",
 ----------------------
 -- plugin functions --
 ----------------------
-vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guifg=#EA936C gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent3 guifg=#E5C07B gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent4 guifg=#98C379 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
+a.nvim_set_hl(0, "IndentBlanklineIndent1", { fg = colors.red } )
+a.nvim_set_hl(0, "IndentBlanklineIndent2", { fg = colors.orange } )
+a.nvim_set_hl(0, "IndentBlanklineIndent3", { fg = colors.yellow } )
+a.nvim_set_hl(0, "IndentBlanklineIndent4", { fg = colors.green } )
+a.nvim_set_hl(0, "IndentBlanklineIndent5", { fg = colors.blue } )
+a.nvim_set_hl(0, "IndentBlanklineIndent6", { fg = colors.purple } )
 
 if tablines == 'colored' then
   require("indent_blankline").setup {
