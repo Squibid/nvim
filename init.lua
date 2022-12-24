@@ -190,6 +190,33 @@ a.nvim_set_keymap("n", "<C-g>",
   ":Gitsigns toggle_current_line_blame<CR>", default_opts
 )
 
+-- vbox note taking
+function _G.Toggle_venn()
+    local venn_enabled = vim.inspect(vim.b.venn_enabled)
+    if venn_enabled == "nil" then
+        vim.b.venn_enabled = true
+        vim.cmd[[setlocal ve=all]]
+        -- draw a line on HJKL keystokes
+        a.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
+        a.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", {noremap = true})
+        a.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", {noremap = true})
+        a.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
+        -- draw a box by pressing "f" with visual selection
+        vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
+        -- make easier to navigate 
+        o.cursorcolumn = true
+        o.colorcolumn = { 0 }
+    else
+        vim.cmd[[setlocal ve=]]
+        vim.cmd[[mapclear <buffer>]]
+        vim.b.venn_enabled = nil
+        o.cursorcolumn = false 
+        o.colorcolumn = { 80 }
+    end
+end
+-- toggle keymappings for venn using <leader>v
+a.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true})
+
 ----------------------
 -- plugin functions --
 ----------------------
@@ -303,10 +330,6 @@ require('lualine').setup {
     icons_enabled = false,
     component_separators = { left = '', right = '' },
     section_separators = { left = '', right = '' },
-    disabled_filetypes = {
-      statusline = { "", },
-      winbar = {},
-    },
     theme = custom,
     always_divide_middle = false,
     globalstatus = false,
@@ -557,6 +580,7 @@ return require('packer').startup(function(use)
     config = function() require('stickybuf').setup() end
   }
   use 'mrjones2014/smart-splits.nvim'
+  use 'jbyuki/venn.nvim'
 
   -- completion
   use { 'hrsh7th/nvim-cmp',
