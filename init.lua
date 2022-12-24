@@ -30,10 +30,6 @@ o.tabstop = 2
 o.shiftwidth = 2
 o.softtabstop = -1 -- If negative, shiftwidth value is used
 
--- width line
-o.colorcolumn = { 80 } 
-vim.cmd('highlight ColorColumn ctermbg=0 guibg=lightgrey')
-
 -- colors
 o.termguicolors = true
 vim.cmd('colorscheme jellybeans-nvim')
@@ -51,6 +47,10 @@ local colors = {
   blue   = '#61AFEF',
   purple = '#C678DD',
 }
+
+-- width line
+o.colorcolumn = { 80 } 
+a.nvim_set_hl(0, "ColorColumn", { bg = colors.grey }) 
 
 -- custom opts
 tablines = 'colored' -- false, colored, wrap
@@ -107,14 +107,6 @@ a.nvim_create_autocmd('TermClose', {
   command = 'call nvim_input("<CR>")'
 })
 
--- close terminal buffer in normal mode
-a.nvim_create_autocmd('FileType', {
-  pattern = 'term://*',
-  callback = function()
-    vim.keymap.set('n', '<C-d>', '<cmd>q!<CR>', {remap = true, buffer = true})
-  end
-})
-
 -- start git messages in insert mode
 a.nvim_create_autocmd('FileType', {
   group    = 'bufcheck',
@@ -140,6 +132,12 @@ a.nvim_create_autocmd('FileType', {
 a.nvim_create_autocmd('BufRead', {
   pattern = '*',
   command = [[call setpos(".", getpos("'\""))]]
+})
+
+-- disable color column in certain files
+a.nvim_create_autocmd('FileType', {
+  pattern = { 'netrw', "help", "term", "gitcommit", "packer", "vim" },
+  command = 'set colorcolumn=0'
 })
 
 -- source and compile lua conf
@@ -181,12 +179,6 @@ a.nvim_set_keymap("n", "N", "Nzzzv", default_opts)
 -- execute order 111
 a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", default_opts)
 
--- Resizing panes
-a.nvim_set_keymap("n", '<A-h>', "<cmd>SmartResizeLeft<CR>", default_opts)
-a.nvim_set_keymap("n", '<A-j>', "<cmd>SmartResizeDown<CR>", default_opts)
-a.nvim_set_keymap("n", '<A-k>', "<cmd>SmartResizeUp<CR>", default_opts)
-a.nvim_set_keymap("n", '<A-l>', "<cmd>SmartResizeRight<CR>", default_opts)
-
 -- moving between splits
 a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartCursorMoveLeft<CR>", default_opts)
 a.nvim_set_keymap("n", '<C-j>', "<cmd>SmartCursorMoveDown<CR>", default_opts)
@@ -194,7 +186,6 @@ a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartCursorMoveUp<CR>", default_opts)
 a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartCursorMoveRight<CR>", default_opts)
 
 -- don't blame me pls
-local title = "Nvim"
 a.nvim_set_keymap("n", "<C-g>", 
   ":Gitsigns toggle_current_line_blame<CR>", default_opts
 )
@@ -489,12 +480,7 @@ return require('packer').startup(function(use)
   
   -- the rest of the plugins
   use 'lukas-reineke/indent-blankline.nvim'
-  use { 'lukas-reineke/virt-column.nvim',
-    config = function()
-      require('virt-column').setup()
-    end
-  }
-  use { 'nvim-lualine/lualine.nvim' }
+  use 'nvim-lualine/lualine.nvim'
   use { 'nvchad/nvim-colorizer.lua',
     config = function()
       require('colorizer').setup {
