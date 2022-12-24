@@ -179,11 +179,11 @@ a.nvim_set_keymap("n", "N", "Nzzzv", default_opts)
 -- execute order 111
 a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", default_opts)
 
--- moving between splits
-a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartCursorMoveLeft<CR>", default_opts)
-a.nvim_set_keymap("n", '<C-j>', "<cmd>SmartCursorMoveDown<CR>", default_opts)
-a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartCursorMoveUp<CR>", default_opts)
-a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartCursorMoveRight<CR>", default_opts)
+-- resizing splits 
+a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartResizeLeft<CR>", default_opts)
+a.nvim_set_keymap("n", '<C-j>', "<cmd>SmartResizeDown<CR>", default_opts)
+a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartResizeUp<CR>", default_opts)
+a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartResizeRight<CR>", default_opts)
 
 -- don't blame me pls
 a.nvim_set_keymap("n", "<C-g>", 
