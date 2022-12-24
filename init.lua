@@ -10,13 +10,13 @@ g.mapleader = " "
 o.number = true
 o.relativenumber = true
 o.numberwidth = 2
-o.cursorline = true
+o.cursorline = true -- highlights the current line
 o.scrolloff = 5 -- # lines below/above cursor
-o.showmode = false
-o.cmdheight = 2
+o.showmode = false -- stop vim from showing mode
+o.cmdheight = 2 -- vim command height
 o.mouse = "" -- no mouse
 
-o.wrap = true
+o.wrap = true -- wrap lines
 o.linebreak = true
 o.emoji = false
 o.clipboard = 'unnamedplus' -- use system clipboard
@@ -107,11 +107,47 @@ a.nvim_create_autocmd('TermClose', {
   command = 'call nvim_input("<CR>")'
 })
 
+-- close terminal buffer in normal mode
+a.nvim_create_autocmd('FileType', {
+  pattern = 'term://*',
+  callback = function()
+    vim.keymap.set('n', '<C-d>', '<cmd>q!<CR>', {remap = true, buffer = true})
+  end
+})
+
 -- start git messages in insert mode
 a.nvim_create_autocmd('FileType', {
   group    = 'bufcheck',
   pattern  = { 'gitcommit', 'gitrebase', },
   command  = 'startinsert | 1'
+})
+
+-- add some keybinds to the file view
+a.nvim_create_autocmd('FileType', {
+  pattern = 'netrw',
+  callback = function()
+    local bind = function(lhs, rhs)
+      vim.keymap.set('n', lhs, rhs, {remap = true, buffer = true})
+    end 
+    bind('h', '-^') -- Go up a directory
+    bind('l', '<CR>') -- Go down a directory / open a file
+    bind('.', 'gh') -- Toggle dotfiles
+    bind('P', '<C-w>z') -- Close preview window
+  end
+})
+
+-- return to last place
+a.nvim_create_autocmd('BufRead', {
+  pattern = '*',
+  command = [[call setpos(".", getpos("'\""))]]
+})
+
+-- source and compile lua conf
+local packer_group = a.nvim_create_augroup('Packer', { clear = true })
+vim.api.nvim_create_autocmd('BufWritePost', {
+  command = 'source <afile> | PackerCompile',
+  group = packer_group,
+  pattern = vim.fn.expand '$MYVIMRC',
 })
 
 --------------
@@ -127,17 +163,29 @@ a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", default_opts)
 a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", default_opts)
 
 -- open file viewer
-a.nvim_set_keymap("n", "<C-e>", ":Explore<CR>", default_opts)
-a.nvim_set_keymap("n", "<S-e>", ":Sexplore<CR>", default_opts)
+a.nvim_set_keymap("n", "<C-e>", ":Ex<CR>", default_opts)
+a.nvim_set_keymap("n", "<S-e>", ":Sex<CR>", default_opts)
 
 -- clear search
 a.nvim_set_keymap("n", "<ESC>", ":nohlsearch<Bar>:echo<CR>", default_opts)
 
+-- move selected text
+a.nvim_set_keymap("v", "<S-j>", ":m '>+1<CR>gv=gv", default_opts)
+a.nvim_set_keymap("v", "<S-k>", ":m '<-2<CR>gv=gv", default_opts)
+
+-- keep cursor middle 
+a.nvim_set_keymap("n", "<S-j>", "mzJ`z", default_opts) -- when combining lines
+a.nvim_set_keymap("n", "n", "nzzzv", default_opts) -- searching
+a.nvim_set_keymap("n", "N", "Nzzzv", default_opts)
+
+-- execute order 111
+a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", default_opts)
+
 -- Resizing panes
-a.nvim_set_keymap("n", '<S-h>', "<cmd>SmartResizeLeft<CR>", default_opts)
-a.nvim_set_keymap("n", '<S-j>', "<cmd>SmartResizeDown<CR>", default_opts)
-a.nvim_set_keymap("n", '<S-k>', "<cmd>SmartResizeUp<CR>", default_opts)
-a.nvim_set_keymap("n", '<S-l>', "<cmd>SmartResizeRight<CR>", default_opts)
+a.nvim_set_keymap("n", '<A-h>', "<cmd>SmartResizeLeft<CR>", default_opts)
+a.nvim_set_keymap("n", '<A-j>', "<cmd>SmartResizeDown<CR>", default_opts)
+a.nvim_set_keymap("n", '<A-k>', "<cmd>SmartResizeUp<CR>", default_opts)
+a.nvim_set_keymap("n", '<A-l>', "<cmd>SmartResizeRight<CR>", default_opts)
 
 -- moving between splits
 a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartCursorMoveLeft<CR>", default_opts)
@@ -163,15 +211,15 @@ a.nvim_set_hl(0, "IndentBlanklineIndent6", { fg = colors.purple } )
 
 if tablines == 'colored' then
   require("indent_blankline").setup {
-      space_char_blankline = " ",
-      char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4",
-        "IndentBlanklineIndent5",
-        "IndentBlanklineIndent6",
-      },
+    space_char_blankline = " ",
+    char_highlight_list = {
+      "IndentBlanklineIndent1",
+      "IndentBlanklineIndent2",
+      "IndentBlanklineIndent3",
+      "IndentBlanklineIndent4",
+      "IndentBlanklineIndent5",
+      "IndentBlanklineIndent6",
+    },
   }
 elseif tablines == 'wrap' then
   o.list = true
@@ -423,6 +471,18 @@ cmp.setup {
 -------------
 -- plugins --
 -------------
+
+-- install packer (stolen from nvim-lua/kickstart.nvim)
+local install_path = vim.fn.stdpath 'data' .. 
+  '/site/pack/packer/start/packer.nvim'
+local bootstrap = false
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+  bootstrap = true
+  vim.fn.system { 'git', 'clone', '--depth', '1', 
+    'https://github.com/wbthomason/packer.nvim', install_path }
+  vim.cmd [[packadd packer.nvim]]
+end
+
 return require('packer').startup(function(use)
   -- use packer to manage packer :)
   use 'wbthomason/packer.nvim'
@@ -450,6 +510,7 @@ return require('packer').startup(function(use)
   use { 'nvim-treesitter/nvim-treesitter',
     config = function() 
       require'nvim-treesitter.configs'.setup {
+        ensure_installed = { "help", "c", "lua", },
         highlight = {
           enable = true,
           additional_vim_regex_highlighting = false,
@@ -465,8 +526,6 @@ return require('packer').startup(function(use)
             patterns = {
               default = {
                 'function',
-                --[[ 'class',
-                'method', ]]
               },
             },
           }
@@ -492,6 +551,7 @@ return require('packer').startup(function(use)
           "term",
           "gitcommit",
           "packer",
+          "vim",
         },
       })
       codewindow.apply_default_keybinds()
@@ -544,4 +604,8 @@ return require('packer').startup(function(use)
   use { 'windwp/nvim-autopairs', 
     config = function() require("nvim-autopairs").setup {} end
   }
+
+  if bootstrap then
+    require('packer').sync()
+  end
 end)
