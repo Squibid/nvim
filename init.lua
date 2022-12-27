@@ -9,7 +9,8 @@ g.mapleader = " "
 ---------------
 o.number = true
 o.relativenumber = true
-o.numberwidth = 2
+o.numberwidth = 2 -- width o numberline
+o.signcolumn = 'yes:1' -- show gutter
 o.cursorline = true -- highlights the current line
 o.scrolloff = 5 -- # lines below/above cursor
 o.showmode = false -- stop vim from showing mode
@@ -17,8 +18,8 @@ o.cmdheight = 2 -- vim command height
 o.mouse = "" -- no mouse
 
 o.wrap = true -- wrap lines
-o.linebreak = true
-o.emoji = false
+o.linebreak = true -- fix where line is wraped
+o.emoji = false -- something to do with the spacing of emojis
 o.clipboard = 'unnamedplus' -- use system clipboard
 
 -- intenting & tabing
@@ -33,6 +34,12 @@ o.softtabstop = -1 -- If negative, shiftwidth value is used
 -- colors
 o.termguicolors = true
 vim.cmd('colorscheme jellybeans-nvim')
+
+-- diagnostics
+vim.diagnostic.config({
+  underline = true,
+  virtual_text = { prefix = '*', },
+})
 
 local colors = {
   black  = '#000000',
@@ -49,12 +56,13 @@ local colors = {
 }
 
 -- width line
-o.colorcolumn = { 80 } 
-a.nvim_set_hl(0, "ColorColumn", { bg = colors.grey }) 
+o.colorcolumn = { 80 }
 
 -- custom opts
-tablines = 'colored' -- false, colored, wrap
-minimapcolor = colors.grey
+local copts = {
+  tablines = 'colored', -- false, 'colored', and 'wrap'
+  minimapcolor = colors.grey2,
+}
 
 ------------
 -- saving --
@@ -75,7 +83,7 @@ o.showmatch = true
 -- wild menus --
 ----------------
 o.wildoptions = 'pum'
-o.pumblend = 10
+o.pumblend = 3
 o.pumheight = 20
 
 o.wildignorecase = true
@@ -90,7 +98,7 @@ a.nvim_create_augroup('bufcheck', {clear = true})
 a.nvim_create_autocmd('TextYankPost', {
   group    = 'bufcheck',
   pattern  = '*',
-  callback = function() vim.highlight.on_yank{timeout = 250} end 
+  callback = function() vim.highlight.on_yank{timeout = 250} end
 })
 
 -- start terminal in insert mode
@@ -120,7 +128,7 @@ a.nvim_create_autocmd('FileType', {
   callback = function()
     local bind = function(lhs, rhs)
       vim.keymap.set('n', lhs, rhs, {remap = true, buffer = true})
-    end 
+    end
     bind('h', '-^') -- Go up a directory
     bind('l', '<CR>') -- Go down a directory / open a file
     bind('.', 'gh') -- Toggle dotfiles
@@ -136,11 +144,18 @@ a.nvim_create_autocmd('BufRead', {
 
 -- disable color column in certain files
 a.nvim_create_autocmd('FileType', {
-  pattern = { 'netrw', "help", "term", "gitcommit", "packer", "vim" },
+  pattern = { 'netrw',
+    "help",
+    "term",
+    "gitcommit",
+    "packer",
+    "vim",
+    "Trouble"
+  },
   command = 'set colorcolumn=0'
 })
 
--- source and compile lua conf
+-- source and compile lua conf when written
 local packer_group = a.nvim_create_augroup('Packer', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePost', {
   command = 'source <afile> | PackerCompile',
@@ -152,13 +167,18 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 -- keybinds --
 --------------
 local default_opts = { noremap = true, silent = true }
-local expr_opts = { noremap = true, expr = true, silent = true }
+
+-- greatest remap ever
+a.nvim_set_keymap("n", "<leader>p", "\"_dP", default_opts)
 
 -- esc to go to normal mode in term bufers
 a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", default_opts)
 
 -- open term buffer
 a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", default_opts)
+
+-- open Trouble buffer
+a.nvim_set_keymap("n", "<leader>tt", "<cmd>:TroubleToggle<CR>", default_opts)
 
 -- open file viewer
 a.nvim_set_keymap("n", "<C-e>", ":Ex<CR>", default_opts)
@@ -175,6 +195,8 @@ a.nvim_set_keymap("v", "<S-k>", ":m '<-2<CR>gv=gv", default_opts)
 a.nvim_set_keymap("n", "<S-j>", "mzJ`z", default_opts) -- when combining lines
 a.nvim_set_keymap("n", "n", "nzzzv", default_opts) -- searching
 a.nvim_set_keymap("n", "N", "Nzzzv", default_opts)
+a.nvim_set_keymap("n", "<C-d>", "<C-d>zz", default_opts) -- half page jumping
+a.nvim_set_keymap("n", "<C-u>", "<C-u>zz", default_opts)
 
 -- execute order 111
 a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", default_opts)
@@ -186,7 +208,7 @@ a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartResizeUp<CR>", default_opts)
 a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartResizeRight<CR>", default_opts)
 
 -- don't blame me pls
-a.nvim_set_keymap("n", "<C-g>", 
+a.nvim_set_keymap("n", "<C-g>",
   ":Gitsigns toggle_current_line_blame<CR>", default_opts
 )
 
@@ -196,11 +218,13 @@ function _G.Toggle_venn()
     if venn_enabled == "nil" then
         vim.b.venn_enabled = true
         vim.cmd[[setlocal ve=all]]
+
         -- draw a line on HJKL keystokes
         a.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
         a.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", {noremap = true})
         a.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", {noremap = true})
         a.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
+
         -- draw a box by pressing "f" with visual selection
         vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
         -- make easier to navigate 
@@ -210,16 +234,17 @@ function _G.Toggle_venn()
         vim.cmd[[setlocal ve=]]
         vim.cmd[[mapclear <buffer>]]
         vim.b.venn_enabled = nil
-        o.cursorcolumn = false 
+        o.cursorcolumn = false
         o.colorcolumn = { 80 }
     end
 end
 -- toggle keymappings for venn using <leader>v
 a.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true})
 
-----------------------
--- plugin functions --
-----------------------
+----------------
+-- highlights --
+----------------
+-- indent line colors 
 a.nvim_set_hl(0, "IndentBlanklineIndent1", { fg = colors.red } )
 a.nvim_set_hl(0, "IndentBlanklineIndent2", { fg = colors.orange } )
 a.nvim_set_hl(0, "IndentBlanklineIndent3", { fg = colors.yellow } )
@@ -227,7 +252,38 @@ a.nvim_set_hl(0, "IndentBlanklineIndent4", { fg = colors.green } )
 a.nvim_set_hl(0, "IndentBlanklineIndent5", { fg = colors.blue } )
 a.nvim_set_hl(0, "IndentBlanklineIndent6", { fg = colors.purple } )
 
-if tablines == 'colored' then
+-- code window
+a.nvim_set_hl(0, 'CodewindowBorder', {fg = copts.minimapcolor})
+
+a.nvim_set_hl(0, "ColorColumn", { bg = colors.grey }) -- color column
+a.nvim_set_hl(0, "Pmenu", { bg = colors.black2 })
+a.nvim_set_hl(0, "PmenuSel", { bg = colors.grey2 })
+a.nvim_set_hl(0, "CursorLineNr", { fg = colors.white, bold = true })
+a.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = "#ffffff", bg = "#1E1E1E" })
+a.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = "#006fd8", bg = "#152f47" })
+a.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = "#E9AD5A", bg = "#533221" })
+a.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = "#ED3B44", bg = "#4b1313" })
+
+-- cmp/treesitter stuff
+a.nvim_set_hl(0, "CmpItemMenu", { fg = colors.purple, italic = true })
+
+a.nvim_set_hl(0, "CmpItemKindSnippet", { bg = "#A377BF", bold = true })
+a.nvim_set_hl(0, "CmpItemKindText", { bg = "#63bc47", bold = true })
+a.nvim_set_hl(0, "CmpItemKindField", { bg = "#db7093", bold = true })
+a.nvim_set_hl(0, "CmpItemKindVariable", { bg = "#ff8c00", bold = true })
+a.nvim_set_hl(0, "CmpItemKindEnum", { bg = "#FF5733", bold = true })
+a.nvim_set_hl(0, "CmpItemKindFunction", { bg = "#483d8b", bold = true })
+a.nvim_set_hl(0, "CmpItemKindKeyword", { bg = "#FF339C", bold = true })
+a.nvim_set_hl(0, "CmpItemKindProperty", { bg = "#4FBF63", bold = true })
+a.nvim_set_hl(0, "CmpItemKindInterface", { bg = "#1e90ff", bold = true })
+a.nvim_set_hl(0, "CmpItemKindClass", { bg = "#4D4C5C", bold = true })
+
+a.nvim_set_hl(0, "TreesitterContext", { bg = colors.grey })
+
+----------------------
+-- plugin functions --
+----------------------
+if copts.tablines == 'colored' then
   require("indent_blankline").setup {
     space_char_blankline = " ",
     char_highlight_list = {
@@ -239,7 +295,7 @@ if tablines == 'colored' then
       "IndentBlanklineIndent6",
     },
   }
-elseif tablines == 'wrap' then
+elseif copts.tablines == 'wrap' then
   o.list = true
 
   require("indent_blankline").setup {
@@ -248,16 +304,13 @@ elseif tablines == 'wrap' then
     show_current_context_start = true,
   }
 else
-  g.indent_blankline_char = ' ' 
+  g.indent_blankline_char = ' '
 end
-
--- minimap
-a.nvim_set_hl(0, 'CodewindowBorder', {fg = minimapcolor})
 
 -- lua line
 local custom = require'lualine.themes.auto'
 
-custom.normal = { 
+custom.normal = {
   a = { fg = colors.black, bg = colors.blue, gui = 'bold' },
   b = { fg = colors.black, bg = colors.blue, gui = 'bold' },
   c = { fg = colors.white, bg = colors.grey },
@@ -265,7 +318,7 @@ custom.normal = {
   y = { fg = colors.blue, bg = colors.black2 },
   z = { fg = colors.black2, bg = colors.blue, gui = 'bold' },
 }
-custom.insert = { 
+custom.insert = {
   a = { fg = colors.black, bg = colors.green, gui = 'bold' },
   b = { fg = colors.black, bg = colors.green, gui = 'bold' },
   c = { fg = colors.white, bg = colors.grey },
@@ -273,7 +326,7 @@ custom.insert = {
   y = { fg = colors.green, bg = colors.black2 },
   z = { fg = colors.black2, bg = colors.green, gui = 'bold' },
 }
-custom.replace = { 
+custom.replace = {
   a = { fg = colors.black, bg = colors.orange, gui = 'bold' },
   b = { fg = colors.black, bg = colors.orange, gui = 'bold' },
   c = { fg = colors.white, bg = colors.grey },
@@ -281,7 +334,7 @@ custom.replace = {
   y = { fg = colors.orange, bg = colors.black2 },
   z = { fg = colors.black2, bg = colors.orange, gui = 'bold' },
 }
-custom.visual = { 
+custom.visual = {
   a = { fg = colors.black, bg = colors.purple, gui = 'bold' },
   b = { fg = colors.black, bg = colors.purple, gui = 'bold' },
   c = { fg = colors.white, bg = colors.grey },
@@ -289,7 +342,7 @@ custom.visual = {
   y = { fg = colors.purple, bg = colors.black2 },
   z = { fg = colors.black2, bg = colors.purple, gui = 'bold' },
 }
-custom.command = { 
+custom.command = {
   a = { fg = colors.black, bg = colors.red, gui = 'bold' },
   b = { fg = colors.black, bg = colors.red, gui = 'bold' },
   c = { fg = colors.white, bg = colors.grey },
@@ -297,7 +350,7 @@ custom.command = {
   y = { fg = colors.red, bg = colors.black2 },
   z = { fg = colors.black2, bg = colors.red, gui = 'bold' },
 }
-custom.terminal = { 
+custom.terminal = {
   a = { fg = colors.black, bg = colors.yellow, gui = 'bold' },
   b = { fg = colors.black, bg = colors.yellow, gui = 'bold' },
   c = { fg = colors.white, bg = colors.grey },
@@ -341,7 +394,7 @@ require('lualine').setup {
   },
   sections = {
     lualine_a = {'mode'},
-    lualine_b = { 
+    lualine_b = {
       { 'filetype',
         color = { fg = colors.white, bg = colors.grey },
       },
@@ -376,12 +429,6 @@ require('lualine').setup {
   },
 }
 
-a.nvim_set_hl(0, "PmenuSel", { bg = colors.grey2 })
-a.nvim_set_hl(0, "Pmenu", { bg = colors.black2 })
-a.nvim_set_hl(0, "CmpItemMenu", { fg = colors.purple, italic = true })
-a.nvim_set_hl(0, "CmpItemKindSnippet", { bg = "#A377BF", bold = true })
-a.nvim_set_hl(0, "CmpItemKindText", { bg = "#63bc47", bold = true })
-
 -- completion
 local has_words_before = function()
   unpack = unpack or table.unpack
@@ -389,10 +436,11 @@ local has_words_before = function()
   return col ~= 0 and a.nvim_buf_get_lines(0, line - 1, line, true)
     [1]:sub(col, col):match("%s") == nil
 end
-local luasnip = require('luasnip')
+
 local cmp = require('cmp')
-local lspkind = require('lspkind')
+local luasnip = require('luasnip')
 require("luasnip.loaders.from_vscode").lazy_load()
+
 cmp.setup {
   completion = { autocomplete = false, },
   snippet = {
@@ -400,26 +448,49 @@ cmp.setup {
       luasnip.lsp_expand(args.body)
     end,
   },
-  sources = cmp.config.sources({ 
-    { name = 'nvim-lsp', priority = 3, max_item_count = 5 }, 
-    { name = 'luasnip', priority = 2, max_item_count = 3 }, 
-    { name = 'path', priority = 1, max_item_count = 3 },
-    { name = 'buffer' }, 
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp', keyword_length = 3 },
+    { name = 'luasnip', keyword_length = 3 },
+    { name = 'path' },
+    { name = 'buffer', keyword_length = 3, max_item_count = 7 },
     { name = 'calc' },
   }),
-  window = { 
-    completion = { 
+  window = {
+    completion = {
       winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
       col_offset = -3,
       side_padding = 0,
-    } 
+    }
   },
   formatting = {
     fields = { "kind", "abbr", "menu" },
     format = function(entry, vim_item)
       local kind_icons = {
-        Text = "Tx",
-        Snippet = "<>",
+        Text = 'Tx',
+        Snippet = '<>',
+        Method = '  ',
+        Function = '{}',
+        Constructor = '  ',
+        Field = '""',
+        Variable = 'x=',
+        Class = '~{',
+        Interface = '.h',
+        Module = '  ',
+        Property = '@p',
+        Unit = '  ',
+        Value = '  ',
+        Enum = 'E#',
+        Keyword = '$1',
+        Color = '  ',
+        File = '  ',
+        Reference = '  ',
+        Folder = '  ',
+        EnumMember = '  ',
+        Constant = '  ',
+        Struct = '  ',
+        Event = '  ',
+        Operator = '  ',
+        TypeParameter = '  ',
       }
       local menu_items = {
         buffer = "buffer",
@@ -476,7 +547,7 @@ cmp.setup {
     if a.nvim_get_mode().mode == 'c' then
       return true
     else
-      return not context.in_treesitter_capture("comment") 
+      return not context.in_treesitter_capture("comment")
         and not context.in_syntax_group("Comment")
     end
   end
@@ -485,14 +556,13 @@ cmp.setup {
 -------------
 -- plugins --
 -------------
-
 -- install packer (stolen from nvim-lua/kickstart.nvim)
-local install_path = vim.fn.stdpath 'data' .. 
+local install_path = vim.fn.stdpath 'data' ..
   '/site/pack/packer/start/packer.nvim'
 local bootstrap = false
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   bootstrap = true
-  vim.fn.system { 'git', 'clone', '--depth', '1', 
+  vim.fn.system { 'git', 'clone', '--depth', '1',
     'https://github.com/wbthomason/packer.nvim', install_path }
   vim.cmd [[packadd packer.nvim]]
 end
@@ -500,24 +570,80 @@ end
 return require('packer').startup(function(use)
   -- use packer to manage packer :)
   use 'wbthomason/packer.nvim'
-  
-  -- the rest of the plugins
+
+  -- nice looking but useless
+  use { 'metalelf0/jellybeans-nvim',
+    requires = { 'rktjmp/lush.nvim' },
+  }
   use 'lukas-reineke/indent-blankline.nvim'
-  use 'nvim-lualine/lualine.nvim'
-  use { 'nvchad/nvim-colorizer.lua',
+  use { 'gorbit99/codewindow.nvim',
     config = function()
-      require('colorizer').setup {
-        filetypes = { '*' },
-          user_default_options = {
-            names = false, 
-            RRGGBBAA = true,
-            AARRGGBB = true,
-          },
+      local codewindow = require('codewindow')
+      codewindow.setup({
+        show_cursor = false,
+        minimap_width = 15,
+        window_border = 'single',
+        exclude_filetypes = {
+          "netrw",
+          "help",
+          "term",
+          "gitcommit",
+          "packer",
+          "vim",
+        },
+      })
+      codewindow.apply_default_keybinds()
+    end,
+  }
+  use { 'melkster/modicator.nvim',
+    require('modicator').setup({
+      show_warnings = true,
+      highlights = {
+        modes = {
+          ['i'] = colors.green,
+          ['v'] = colors.purple,
+          ['V'] = colors.purple,
+          ['�'] = colors.purple,
+          ['s'] = colors.yellow,
+          ['S'] = colors.yellow,
+          ['R'] = colors.orange,
+          ['c'] = colors.red,
+        }
+      }
+    })
+  }
+
+  -- useful
+  use 'nvim-lualine/lualine.nvim'
+  use { 'numToStr/Comment.nvim',
+    config = function() require('Comment').setup() end
+  }
+  use 'jghauser/mkdir.nvim'
+  use 'mrjones2014/smart-splits.nvim'
+  use 'jbyuki/venn.nvim'
+  use { 'folke/which-key.nvim',
+    config = function()
+      require("which-key").setup {
+        icons = {
+          breadcrumb = '>>',
+          separator = '->',
+        },
+        window = { winblend = 3, },
+        layout = { align = 'center', },
       }
     end
   }
-  use { 'nvim-treesitter/nvim-treesitter',
-    config = function() 
+  -- gutter
+  use { 'lewis6991/gitsigns.nvim',
+    config = function() require('gitsigns').setup() end
+  }
+  use { 'chentoast/marks.nvim',
+    config = function() require('marks').setup() end
+  }
+
+  -- syntax related
+    use { 'nvim-treesitter/nvim-treesitter',
+    config = function()
       require'nvim-treesitter.configs'.setup {
         ensure_installed = { "help", "c", "lua", },
         highlight = {
@@ -541,48 +667,58 @@ return require('packer').startup(function(use)
         end
       },
     }
-
   }
-  use 'b3nj5m1n/kommentary'
-  use { 'metalelf0/jellybeans-nvim', 
-    requires = { 'rktjmp/lush.nvim' },
-  }
-  use { 'gorbit99/codewindow.nvim',
+  use { 'nvchad/nvim-colorizer.lua',
     config = function()
-      local codewindow = require('codewindow')
-      codewindow.setup({
-        show_cursor = false,
-        minimap_width = 15,
-        window_border = 'double',
-        exclude_filetypes = { 
-          "netrw",
-          "help",
-          "term",
-          "gitcommit",
-          "packer",
-          "vim",
+      require('colorizer').setup {
+        filetypes = { '*' },
+          user_default_options = {
+            names = false,
+            RRGGBBAA = true,
+            AARRGGBB = true,
+          },
+      }
+    end
+  }
+  use { "folke/trouble.nvim",
+    config = function()
+      require("trouble").setup {
+        icons = false,
+        fold_open = "v",
+        fold_closed = ">",
+        signs = {
+          error = "[x]",
+          warning = "[!]",
+          hint = "[?]",
+          information = "[i]"
         },
-      })
-      codewindow.apply_default_keybinds()
-    end,
+      }
+    end
   }
-  use 'jghauser/mkdir.nvim'
-  use { 'lewis6991/gitsigns.nvim', 
-    config = function() require('gitsigns').setup() end 
-  }
-  use { 'chentoast/marks.nvim', 
-    config = function() require('marks').setup() end 
-  }
-  use { 'nacro90/numb.nvim', 
-    config = function() require('numb').setup() end 
-  }
-  use { 'stevearc/stickybuf.nvim',
-    config = function() require('stickybuf').setup() end
-  }
-  use 'mrjones2014/smart-splits.nvim'
-  use 'jbyuki/venn.nvim'
 
   -- completion
+  use { 'VonHeikemen/lsp-zero.nvim',
+    config = function()
+      local lsp = require('lsp-zero')
+      lsp.set_preferences({
+        suggest_lsp_servers = true,
+        setup_servers_on_start = true,
+        set_lsp_keymaps = true,
+        configure_diagnostics = true,
+        cmp_capabilities = true,
+        manage_nvim_cmp = false,
+        call_servers = 'local',
+        sign_icons = {
+          error = 'x',
+          warn = '!',
+          hint = '?',
+          info = 'i'
+        }
+      })
+      lsp.setup()
+    end
+  }
+
   use { 'hrsh7th/nvim-cmp',
     requires = {
       'hrsh7th/cmp-buffer',
@@ -590,6 +726,7 @@ return require('packer').startup(function(use)
       'hrsh7th/cmp-calc',
       'saadparwaiz1/cmp_luasnip',
       'hrsh7th/cmp-nvim-lua',
+      'hrsh7th/cmp-nvim-lsp',
       'lukas-reineke/cmp-under-comparator',
       { 'onsails/lspkind.nvim',
         config = function()
@@ -598,6 +735,8 @@ return require('packer').startup(function(use)
       },
     }
   }
+
+  -- snippets
   use { 'L3MON4D3/LuaSnip',
     tag = 'v1.*',
     requires = {
@@ -611,7 +750,13 @@ return require('packer').startup(function(use)
       })
     end
   }
-  use { 'windwp/nvim-autopairs', 
+
+  -- lsp stuff
+  use 'neovim/nvim-lspconfig'
+  use 'williamboman/mason.nvim'
+  use 'williamboman/mason-lspconfig.nvim'
+
+  use { 'windwp/nvim-autopairs',
     config = function() require("nvim-autopairs").setup {} end
   }
 
