@@ -44,6 +44,8 @@ vim.diagnostic.config({
 local colors = {
   black  = '#000000',
   black2 = '#161616',
+  black3 = '#0E0E0E',
+  black4 = '#101010',
   grey   = '#1E1E1E',
   grey2  = '#404040',
   white  = '#ffffff',
@@ -89,6 +91,14 @@ o.pumheight = 20
 o.wildignorecase = true
 o.wildignore = '*.o'
 
+-----------
+-- netrw --
+-----------
+g.netrw_banner = 0
+g.netrw_localcopydircmd = 'cp -r'
+g.netrw_winsize = 30
+g.netrw_liststyle = 1
+
 -------------------
 -- auto commands --
 -------------------
@@ -122,6 +132,115 @@ a.nvim_create_autocmd('FileType', {
   command  = 'startinsert | 1'
 })
 
+-- return to last place
+a.nvim_create_autocmd('BufRead', {
+  pattern = '*',
+  command = [[call setpos(".", getpos("'\""))]]
+})
+
+-- disable color column in certain files
+a.nvim_create_autocmd('FileType', {
+  pattern = {
+    'netrw',
+    "help",
+    "term",
+    "gitcommit",
+    "packer",
+    "vim",
+    "Trouble",
+    "norg"
+  },
+  command = 'set colorcolumn=0'
+})
+
+-- disable intent markers in certain files
+a.nvim_create_autocmd('FileType', {
+  pattern = {
+    'netrw',
+    "help",
+    "term",
+    "gitcommit",
+    "packer",
+    "vim",
+    "Trouble",
+    "norg"
+  },
+  command = 'IndentBlanklineDisable'
+})
+
+-- source and compile lua conf when written
+local packer_group = a.nvim_create_augroup('Packer', { clear = true })
+vim.api.nvim_create_autocmd('BufWritePost', {
+  command = 'source <afile> | PackerCompile',
+  group = packer_group,
+  pattern = vim.fn.expand '$MYVIMRC',
+})
+
+-- telescope preview opts
+a.nvim_create_autocmd('User', {
+  pattern = 'TelescopePreviewerLoaded',
+  command = 'setlocal number',
+})
+
+--------------
+-- keybinds --
+--------------
+local opts = { noremap = true, silent = true }
+
+-- greatest remap ever
+a.nvim_set_keymap("n", "<leader>p", "\"_dP", opts)
+
+-- esc to go to normal mode in term bufers
+a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", opts)
+
+-- open term buffer
+a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", opts)
+
+-- open Trouble buffer
+a.nvim_set_keymap("n", "<leader>tt", "<cmd>:TroubleToggle<CR>", opts)
+
+-- open file viewer
+a.nvim_set_keymap("n", "<leader>fo", ":Ex<CR>", opts)
+a.nvim_set_keymap("n", "<leader>fs", ":Sex<CR>", opts)
+
+-- clear search
+a.nvim_set_keymap("n", "<ESC>", ":nohlsearch<Bar>:echo<CR>", opts)
+
+-- move selected text
+a.nvim_set_keymap("v", "<S-j>", ":m '>+1<CR>gv=gv", opts)
+a.nvim_set_keymap("v", "<S-k>", ":m '<-2<CR>gv=gv", opts)
+
+-- keep cursor middle 
+a.nvim_set_keymap("n", "<S-j>", "mzJ`z", opts) -- when combining lines
+a.nvim_set_keymap("n", "n", "nzzzv", opts) -- searching
+a.nvim_set_keymap("n", "N", "Nzzzv", opts)
+a.nvim_set_keymap("n", "<C-d>", "<C-d>zz", opts) -- half page jumping
+a.nvim_set_keymap("n", "<C-u>", "<C-u>zz", opts)
+
+-- execute order 111
+a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", opts)
+
+-- resizing splits 
+a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartResizeLeft<CR>", opts)
+a.nvim_set_keymap("n", '<C-j>', "<cmd>SmartResizeDown<CR>", opts)
+a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartResizeUp<CR>", opts)
+a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartResizeRight<CR>", opts)
+
+-- don't blame me pls
+a.nvim_set_keymap("n", "<C-g>",
+  ":Gitsigns toggle_current_line_blame<CR>", opts
+)
+
+-- telescope
+a.nvim_set_keymap('n', '<leader>sf', '<cmd>Telescope find_files<CR>', opts)
+a.nvim_set_keymap('n', '<leader>sg', '<cmd>Telescope git_commits<CR>', opts)
+a.nvim_set_keymap('n', '<leader>sb',
+  '<cmd>Telescope current_buffer_fuzzy_find<CR>', opts)
+a.nvim_set_keymap('n', '<leader>so', '<cmd>Telescope oldfiles<CR>', opts)
+a.nvim_set_keymap('n', '<leader>sc', '<cmd>Telescope neoclip unnamed<CR>', opts)
+a.nvim_set_keymap('n', '<leader>su', '<cmd>Telescope undo<CR>', opts)
+
+-- auto comand keybinds
 -- add some keybinds to the file view
 a.nvim_create_autocmd('FileType', {
   pattern = 'netrw',
@@ -133,110 +252,35 @@ a.nvim_create_autocmd('FileType', {
     bind('l', '<CR>') -- Go down a directory / open a file
     bind('.', 'gh') -- Toggle dotfiles
     bind('P', '<C-w>z') -- Close preview window
+    bind('<ESC>', '<cmd>q<CR>') -- Close netrw
   end
 })
 
--- return to last place
-a.nvim_create_autocmd('BufRead', {
-  pattern = '*',
-  command = [[call setpos(".", getpos("'\""))]]
-})
-
--- disable color column in certain files
-a.nvim_create_autocmd('FileType', {
-  pattern = { 'netrw',
-    "help",
-    "term",
-    "gitcommit",
-    "packer",
-    "vim",
-    "Trouble"
-  },
-  command = 'set colorcolumn=0'
-})
-
--- source and compile lua conf when written
-local packer_group = a.nvim_create_augroup('Packer', { clear = true })
-vim.api.nvim_create_autocmd('BufWritePost', {
-  command = 'source <afile> | PackerCompile',
-  group = packer_group,
-  pattern = vim.fn.expand '$MYVIMRC',
-})
-
---------------
--- keybinds --
---------------
-local default_opts = { noremap = true, silent = true }
-
--- greatest remap ever
-a.nvim_set_keymap("n", "<leader>p", "\"_dP", default_opts)
-
--- esc to go to normal mode in term bufers
-a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", default_opts)
-
--- open term buffer
-a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", default_opts)
-
--- open Trouble buffer
-a.nvim_set_keymap("n", "<leader>tt", "<cmd>:TroubleToggle<CR>", default_opts)
-
--- open file viewer
-a.nvim_set_keymap("n", "<C-e>", ":Ex<CR>", default_opts)
-a.nvim_set_keymap("n", "<S-e>", ":Sex<CR>", default_opts)
-
--- clear search
-a.nvim_set_keymap("n", "<ESC>", ":nohlsearch<Bar>:echo<CR>", default_opts)
-
--- move selected text
-a.nvim_set_keymap("v", "<S-j>", ":m '>+1<CR>gv=gv", default_opts)
-a.nvim_set_keymap("v", "<S-k>", ":m '<-2<CR>gv=gv", default_opts)
-
--- keep cursor middle 
-a.nvim_set_keymap("n", "<S-j>", "mzJ`z", default_opts) -- when combining lines
-a.nvim_set_keymap("n", "n", "nzzzv", default_opts) -- searching
-a.nvim_set_keymap("n", "N", "Nzzzv", default_opts)
-a.nvim_set_keymap("n", "<C-d>", "<C-d>zz", default_opts) -- half page jumping
-a.nvim_set_keymap("n", "<C-u>", "<C-u>zz", default_opts)
-
--- execute order 111
-a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", default_opts)
-
--- resizing splits 
-a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartResizeLeft<CR>", default_opts)
-a.nvim_set_keymap("n", '<C-j>', "<cmd>SmartResizeDown<CR>", default_opts)
-a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartResizeUp<CR>", default_opts)
-a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartResizeRight<CR>", default_opts)
-
--- don't blame me pls
-a.nvim_set_keymap("n", "<C-g>",
-  ":Gitsigns toggle_current_line_blame<CR>", default_opts
-)
-
 -- vbox note taking
 function _G.Toggle_venn()
-    local venn_enabled = vim.inspect(vim.b.venn_enabled)
-    if venn_enabled == "nil" then
-        vim.b.venn_enabled = true
-        vim.cmd[[setlocal ve=all]]
+  local venn_enabled = vim.inspect(vim.b.venn_enabled)
+  if venn_enabled == "nil" then
+    vim.b.venn_enabled = true
+    vim.cmd[[setlocal ve=all]]
 
-        -- draw a line on HJKL keystokes
-        a.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
-        a.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", {noremap = true})
-        a.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", {noremap = true})
-        a.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
+    -- draw a line on HJKL keystokes
+    a.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
+    a.nvim_buf_set_keymap(0, "n", "K", "<C-v>k:VBox<CR>", {noremap = true})
+    a.nvim_buf_set_keymap(0, "n", "L", "<C-v>l:VBox<CR>", {noremap = true})
+    a.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
 
-        -- draw a box by pressing "f" with visual selection
-        vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
-        -- make easier to navigate 
-        o.cursorcolumn = true
-        o.colorcolumn = { 0 }
-    else
-        vim.cmd[[setlocal ve=]]
-        vim.cmd[[mapclear <buffer>]]
-        vim.b.venn_enabled = nil
-        o.cursorcolumn = false
-        o.colorcolumn = { 80 }
-    end
+    -- draw a box by pressing "f" with visual selection
+    vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
+    -- make easier to navigate 
+    o.cursorcolumn = true
+    o.colorcolumn = { 0 }
+  else
+    vim.cmd[[setlocal ve=]]
+    vim.cmd[[mapclear <buffer>]]
+    vim.b.venn_enabled = nil
+    o.cursorcolumn = false
+    o.colorcolumn = { 80 }
+  end
 end
 -- toggle keymappings for venn using <leader>v
 a.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true})
@@ -280,26 +324,49 @@ a.nvim_set_hl(0, "CmpItemKindClass", { bg = "#4D4C5C", bold = true })
 
 a.nvim_set_hl(0, "TreesitterContext", { bg = colors.grey })
 
+-- telescope
+a.nvim_set_hl(0, "TelescopeMatching", { bg = colors.black3 })
+a.nvim_set_hl(0, "TelescopeNormal", { bg = colors.black3 })
+
+a.nvim_set_hl(0, "TelescopePreviewBorder", { bg = colors.black3 })
+a.nvim_set_hl(0, "TelescopePreviewNormal", { bg = colors.black3 })
+a.nvim_set_hl(0, "TelescopePreviewTitle", { bg = colors.black3,
+  fg = colors.black3 })
+
+a.nvim_set_hl(0, "TelescopePromptBorder", { bg = colors.black2 })
+a.nvim_set_hl(0, "TelescopePromptNormal", { bg = colors.black2 })
+a.nvim_set_hl(0, "TelescopePromptPrefix", { bg = colors.black2 })
+a.nvim_set_hl(0, "TelescopePromptTitle", { bg = colors.black2,
+  fg = colors.black2 })
+
+a.nvim_set_hl(0, "TelescopeResultsBorder", { bg = colors.black4 })
+a.nvim_set_hl(0, "TelescopeResultsNormal", { bg = colors.black4 })
+a.nvim_set_hl(0, "TelescopeResultsTitle", { bg = colors.black4,
+  fg = colors.black4 })
+
+a.nvim_set_hl(0, "TelescopeSelection", { bg = colors.black2 })
+a.nvim_set_hl(0, "TelescopeSelectionCaret", { bg = colors.black2,
+  fg = colors.orange, bold = true })
+
 ----------------------
 -- plugin functions --
 ----------------------
 if copts.tablines == 'colored' then
   require("indent_blankline").setup {
-    space_char_blankline = " ",
+    space_char_blankline = ' ',
     char_highlight_list = {
-      "IndentBlanklineIndent1",
-      "IndentBlanklineIndent2",
-      "IndentBlanklineIndent3",
-      "IndentBlanklineIndent4",
-      "IndentBlanklineIndent5",
-      "IndentBlanklineIndent6",
+      'IndentBlanklineIndent1',
+      'IndentBlanklineIndent2',
+      'IndentBlanklineIndent3',
+      'IndentBlanklineIndent4',
+      'IndentBlanklineIndent5',
+      'IndentBlanklineIndent6',
     },
   }
 elseif copts.tablines == 'wrap' then
   o.list = true
-
-  require("indent_blankline").setup {
-    space_char_blankline = " ",
+  require('indent_blankline').setup {
+    space_char_blankline = ' ',
     show_current_context = true,
     show_current_context_start = true,
   }
@@ -424,7 +491,6 @@ require('lualine').setup {
     }
   },
   inactive_sections = {
-    lualine_c = {'filename'},
     lualine_x = {'location'},
   },
 }
@@ -556,19 +622,22 @@ cmp.setup {
 -------------
 -- plugins --
 -------------
--- install packer (stolen from nvim-lua/kickstart.nvim)
-local install_path = vim.fn.stdpath 'data' ..
-  '/site/pack/packer/start/packer.nvim'
-local bootstrap = false
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  bootstrap = true
-  vim.fn.system { 'git', 'clone', '--depth', '1',
-    'https://github.com/wbthomason/packer.nvim', install_path }
-  vim.cmd [[packadd packer.nvim]]
+-- install packer
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1',
+      'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
 end
+local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
-  -- use packer to manage packer :)
+  -- I use the packer to manage the packer
   use 'wbthomason/packer.nvim'
 
   -- nice looking but useless
@@ -590,6 +659,7 @@ return require('packer').startup(function(use)
           "gitcommit",
           "packer",
           "vim",
+          "Trouble",
         },
       })
       codewindow.apply_default_keybinds()
@@ -619,8 +689,32 @@ return require('packer').startup(function(use)
     config = function() require('Comment').setup() end
   }
   use 'jghauser/mkdir.nvim'
-  use 'mrjones2014/smart-splits.nvim'
   use 'jbyuki/venn.nvim'
+  use { 'nvim-neorg/neorg',
+    tag = '*',
+    ft = 'norg',
+    run = ':Neorg sync-parsers',
+    requires = 'nvim-lua/plenary.nvim',
+    config = function()
+      require('neorg').setup {
+        load = {
+          ['core.defaults'] = {},
+          ['core.norg.concealer'] = {
+            config = {
+              dim_code_blocks = {
+                width = 'content',
+                padding = { right = 2, },
+              },
+              folds = false,
+            }
+          },
+          ['core.norg.completion'] = {
+            config = { engine = 'nvim-cmp', }
+          },
+        }
+      }
+    end
+  }
   use { 'folke/which-key.nvim',
     config = function()
       require("which-key").setup {
@@ -633,6 +727,61 @@ return require('packer').startup(function(use)
       }
     end
   }
+  use { 'nvim-telescope/telescope.nvim',
+    tag = '0.1.x',
+    requires = {
+      'nvim-lua/plenary.nvim',
+      'debugloop/telescope-undo.nvim',
+    },
+    config = function()
+      local telescope = require('telescope')
+      local actions = require('telescope.actions')
+
+      telescope.load_extension('undo')
+      telescope.setup {
+        defaults = {
+          borderchars = { " ", " ", " ", " ", " ", " ", " ", " " },
+          sorting_strategy = 'ascending',
+          layout_config = {
+            height = 0.9,
+            prompt_position = 'top',
+          },
+          mappings = {
+            i = {
+              ['<C-h>'] = 'which_key',
+              ['<C-j>'] = actions.move_selection_next,
+              ['<C-k>'] = actions.move_selection_previous,
+              ['<C-l>'] = actions.select_default,
+              ['<C-u>'] = actions.preview_scrolling_up,
+              ['<C-d>'] = actions.preview_scrolling_down,
+            },
+            n = {
+              ["gg"] = actions.move_to_top,
+              ["G"] = actions.move_to_bottom,
+            },
+          },
+        }
+      }
+    end
+  }
+  use { 'AckslD/nvim-neoclip.lua',
+    config = function()
+      require('neoclip').setup {
+        keys = { telescope = { i = { paste_behind = ' ' } } }
+      }
+    end
+  }
+  use { 'mrjones2014/smart-splits.nvim',
+    requires = { 'kwkarlwang/bufresize.nvim',
+      config = function() require("bufresize").setup() end
+    },
+    config = function()
+      require('smart-splits').setup {
+        resize_mode = { hooks = { on_leave = require('bufresize').register } }
+      }
+    end
+  }
+
   -- gutter
   use { 'lewis6991/gitsigns.nvim',
     config = function() require('gitsigns').setup() end
@@ -760,7 +909,7 @@ return require('packer').startup(function(use)
     config = function() require("nvim-autopairs").setup {} end
   }
 
-  if bootstrap then
+  if packer_bootstrap then
     require('packer').sync()
   end
 end)
