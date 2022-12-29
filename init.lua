@@ -1,6 +1,7 @@
 local o = vim.opt
 local g = vim.g
 local a = vim.api
+local cmd = vim.cmd
 
 g.mapleader = " "
 
@@ -33,7 +34,7 @@ o.softtabstop = -1 -- If negative, shiftwidth value is used
 
 -- colors
 o.termguicolors = true
-vim.cmd('colorscheme jellybeans-nvim')
+cmd('colorscheme jellybeans-nvim')
 
 -- diagnostics
 vim.diagnostic.config({
@@ -190,11 +191,11 @@ local opts = { noremap = true, silent = true }
 -- greatest remap ever
 a.nvim_set_keymap("n", "<leader>p", "\"_dP", opts)
 
--- esc to go to normal mode in term bufers
-a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", opts)
-
 -- open term buffer
 a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", opts)
+
+-- esc to go to normal mode in term bufers
+a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", opts)
 
 -- open Trouble buffer
 a.nvim_set_keymap("n", "<leader>tt", "<cmd>:TroubleToggle<CR>", opts)
@@ -227,9 +228,7 @@ a.nvim_set_keymap("n", '<C-k>', "<cmd>SmartResizeUp<CR>", opts)
 a.nvim_set_keymap("n", '<C-l>', "<cmd>SmartResizeRight<CR>", opts)
 
 -- don't blame me pls
-a.nvim_set_keymap("n", "<C-g>",
-  ":Gitsigns toggle_current_line_blame<CR>", opts
-)
+a.nvim_set_keymap("n", "<C-g>", ":Gitsigns toggle_current_line_blame<CR>", opts)
 
 -- telescope
 a.nvim_set_keymap('n', '<leader>sf', '<cmd>Telescope find_files<CR>', opts)
@@ -239,6 +238,7 @@ a.nvim_set_keymap('n', '<leader>sb',
 a.nvim_set_keymap('n', '<leader>so', '<cmd>Telescope oldfiles<CR>', opts)
 a.nvim_set_keymap('n', '<leader>sc', '<cmd>Telescope neoclip unnamed<CR>', opts)
 a.nvim_set_keymap('n', '<leader>su', '<cmd>Telescope undo<CR>', opts)
+a.nvim_set_keymap('n', '<leader>sd', '<cmd>Telescope diagnostics<CR>', opts)
 
 -- auto comand keybinds
 -- add some keybinds to the file view
@@ -261,7 +261,7 @@ function _G.Toggle_venn()
   local venn_enabled = vim.inspect(vim.b.venn_enabled)
   if venn_enabled == "nil" then
     vim.b.venn_enabled = true
-    vim.cmd[[setlocal ve=all]]
+    cmd[[setlocal ve=all]]
 
     -- draw a line on HJKL keystokes
     a.nvim_buf_set_keymap(0, "n", "J", "<C-v>j:VBox<CR>", {noremap = true})
@@ -270,13 +270,13 @@ function _G.Toggle_venn()
     a.nvim_buf_set_keymap(0, "n", "H", "<C-v>h:VBox<CR>", {noremap = true})
 
     -- draw a box by pressing "f" with visual selection
-    vim.api.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
+    a.nvim_buf_set_keymap(0, "v", "f", ":VBox<CR>", {noremap = true})
     -- make easier to navigate 
     o.cursorcolumn = true
     o.colorcolumn = { 0 }
   else
-    vim.cmd[[setlocal ve=]]
-    vim.cmd[[mapclear <buffer>]]
+    cmd[[setlocal ve=]]
+    cmd[[mapclear <buffer>]]
     vim.b.venn_enabled = nil
     o.cursorcolumn = false
     o.colorcolumn = { 80 }
@@ -306,7 +306,8 @@ a.nvim_set_hl(0, "CursorLineNr", { fg = colors.white, bold = true })
 a.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = "#ffffff", bg = "#1E1E1E" })
 a.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = "#006fd8", bg = "#152f47" })
 a.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = "#E9AD5A", bg = "#533221" })
-a.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = "#ED3B44", bg = "#4b1313" })
+a.nvim_set_hl(0, "DiagnosticVirtualTextError",
+  { fg = "#ED3B44", bg = "#4b1313" })
 
 -- cmp/treesitter stuff
 a.nvim_set_hl(0, "CmpItemMenu", { fg = colors.purple, italic = true })
@@ -629,7 +630,7 @@ local ensure_packer = function()
   if fn.empty(fn.glob(install_path)) > 0 then
     fn.system({'git', 'clone', '--depth', '1',
       'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
+    cmd [[packadd packer.nvim]]
     return true
   end
   return false
