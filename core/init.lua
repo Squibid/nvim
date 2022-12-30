@@ -1,0 +1,5 @@
+require('core.plugins')
+require('core.opts')
+require('core.maps')
+require('core.auto')
+require('core.overrides.init')
