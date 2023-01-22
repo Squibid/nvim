@@ -10,23 +10,54 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  { 'rcarriga/nvim-notify' },
+
+	-- only the most useless plugins (some of these are also ui related)
+	{ 'goolord/alpha-nvim' },
+	{ 'gorbit99/codewindow.nvim' },
+	{ 'alec-gibson/nvim-tetris' },
+	{ 'kwakzalver/duckytype.nvim', config = true }, -- like monkey type
+	{ 'melkster/modicator.nvim' },
+	{ 'nyngwang/murmur.lua', config = true },
+	--
+
+  -- colorscheme / ui
   { 'metalelf0/jellybeans-nvim',
     dependencies = 'rktjmp/lush.nvim',
     lazy = false,
     priority = 1000,
   },
-  { 'lukas-reineke/indent-blankline.nvim' },
   { 'nvim-lualine/lualine.nvim' },
+  { 'lukas-reineke/indent-blankline.nvim' },
+  { 'lewis6991/gitsigns.nvim', config = true, },
+  { 'chentoast/marks.nvim', config = true, },
+  { 'folke/which-key.nvim' },
+  { 'mrjones2014/smart-splits.nvim',
+    dependencies = { 'kwkarlwang/bufresize.nvim', config = true, },
+  },
+  --
+
+  -- careful the following plugins might be considered useful procede with caution
+  -- muh fzf
   { 'nvim-telescope/telescope.nvim',
     version = '0.1.*',
     dependencies = {
+      'nvim-telescope/telescope-file-browser.nvim',
       'nvim-lua/plenary.nvim',
       'debugloop/telescope-undo.nvim',
+      'AckslD/nvim-neoclip.lua'
     }
   },
-  { 'gorbit99/codewindow.nvim' },
-  { 'melkster/modicator.nvim' },
+  --
+
+  -- debugging
   { 'numToStr/Comment.nvim', config = true, },
+  { 'folke/trouble.nvim' },
+  { 'folke/todo-comments.nvim', config = true, },
+  { 'andrewferrier/debugprint.nvim', config = true },
+  --
+
+  -- notes
   { 'jbyuki/venn.nvim' },
   { 'nvim-neorg/neorg',
     version = '*',
@@ -34,18 +65,16 @@ require('lazy').setup({
     build = ':Neorg sync-parsers',
     dependencies = 'nvim-lua/plenary.nvim',
   },
-  { 'folke/which-key.nvim' },
-  { 'AckslD/nvim-neoclip.lua' },
-  { 'mrjones2014/smart-splits.nvim',
-    dependencies = { 'kwkarlwang/bufresize.nvim', config = true, },
+  { 'shortcuts/no-neck-pain.nvim',
+    version = '*',
   },
-  { 'lewis6991/gitsigns.nvim', config = true, },
-  { 'chentoast/marks.nvim', config = true, },
+  --
+
+  -- cmp, lsp and syntax
   { 'nvim-treesitter/nvim-treesitter',
     dependencies = 'nvim-treesitter/nvim-treesitter-context'
   },
   { 'nvchad/nvim-colorizer.lua' },
-  { 'folke/trouble.nvim' },
   { 'VonHeikemen/lsp-zero.nvim' },
   { 'hrsh7th/nvim-cmp',
     dependencies = {
@@ -57,6 +86,7 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
       'lukas-reineke/cmp-under-comparator',
       'onsails/lspkind.nvim',
+      'mrded/nvim-lsp-notify',
     },
   },
   { 'L3MON4D3/LuaSnip',
@@ -68,4 +98,5 @@ require('lazy').setup({
   { 'williamboman/mason.nvim' },
   { 'williamboman/mason-lspconfig.nvim' },
   { 'windwp/nvim-autopairs', config = true, },
+  --
 })

@@ -2,6 +2,7 @@ local telescope = require('telescope')
 local actions = require('telescope.actions')
 
 telescope.load_extension('undo')
+telescope.load_extension('file_browser')
 telescope.setup {
   defaults = {
     borderchars = { " ", " ", " ", " ", " ", " ", " ", " " },

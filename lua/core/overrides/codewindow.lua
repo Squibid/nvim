@@ -11,6 +11,7 @@ codewindow.setup({
     "packer",
     "vim",
     "Trouble",
+    "alpha",
   },
 })
 codewindow.apply_default_keybinds()

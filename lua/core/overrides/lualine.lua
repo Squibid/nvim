@@ -73,9 +73,17 @@ require('lualine').setup {
     icons_enabled = false,
     component_separators = { left = '', right = '' },
     section_separators = { left = '', right = '' },
+    disabled_filetypes = {
+      statusline = {
+        'no-neck-pain',
+        'alpha',
+        'TelescopePrompt',
+      },
+      winbar = {},
+    },
     theme = custom,
     always_divide_middle = false,
-    globalstatus = false,
+    globalstatus = true,
     refresh = {
       statusline = 100,
       tabline = 1000,

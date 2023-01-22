@@ -44,7 +44,8 @@ a.nvim_create_autocmd('FileType', {
     "packer",
     "vim",
     "Trouble",
-    "norg"
+    "norg",
+    "alpha"
   },
   command = 'set colorcolumn=0'
 })
@@ -59,21 +60,24 @@ a.nvim_create_autocmd('FileType', {
     "packer",
     "vim",
     "Trouble",
-    "norg"
+    "norg",
+    "alpha"
   },
   command = 'IndentBlanklineDisable'
+})
+
+-- disable extra tildas in certain files
+a.nvim_create_autocmd('FileType', {
+  pattern = {
+    'alpha'
+  },
+  command = 'hi NonText guifg=bg'
 })
 
 -- source and compile lua conf when written
 local packer_group = a.nvim_create_augroup('Packer', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePost', {
-  command = 'source <afile> | PackerCompile',
+  command = 'source <afile>',
   group = packer_group,
   pattern = vim.fn.expand '$MYVIMRC',
-})
-
--- telescope preview opts
-a.nvim_create_autocmd('User', {
-  pattern = 'TelescopePreviewerLoaded',
-  command = 'setlocal number',
 })

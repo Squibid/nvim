@@ -17,6 +17,7 @@ o.scrolloff = 5 -- # lines below/above cursor
 o.showmode = false -- stop vim from showing mode
 o.cmdheight = 2 -- vim command height
 o.mouse = "" -- no mouse
+o.laststatus = 3 -- global statusline
 
 o.wrap = true -- wrap lines
 o.linebreak = true -- fix where line is wraped
@@ -37,10 +38,13 @@ o.termguicolors = true
 cmd('colorscheme jellybeans-nvim')
 
 -- diagnostics
-vim.diagnostic.config({
-  underline = true,
-  virtual_text = { prefix = '*', },
-})
+vim.lsp.handlers["textDocument/publishDiagnostics"] =
+  vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics,
+  {
+    virtual_text = { prefix = '*' },
+  }
+)
 
 colors = {
   black  = '#000000',
@@ -126,6 +130,13 @@ a.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = "#E9AD5A", bg = "#533221" }
 a.nvim_set_hl(0, "DiagnosticVirtualTextError",
   { fg = "#ED3B44", bg = "#4b1313" })
 
+-- alpha start page 4chan edition
+a.nvim_set_hl(0, "AlphaHeader", {fg = "#789922" })
+a.nvim_set_hl(0, "AlphaEmphasis", {fg = "#DD0000" })
+
+-- murmur (word highlights)
+a.nvim_set_hl(0, "murmur_cursor_rgb", { bg = colors.grey2 })
+
 -- cmp/treesitter stuff
 a.nvim_set_hl(0, "CmpItemMenu", { fg = colors.purple, italic = true })
 
@@ -139,6 +150,7 @@ a.nvim_set_hl(0, "CmpItemKindKeyword", { bg = "#FF339C", bold = true })
 a.nvim_set_hl(0, "CmpItemKindProperty", { bg = "#4FBF63", bold = true })
 a.nvim_set_hl(0, "CmpItemKindInterface", { bg = "#1e90ff", bold = true })
 a.nvim_set_hl(0, "CmpItemKindClass", { bg = "#4D4C5C", bold = true })
+a.nvim_set_hl(0, "CmpItemKindFile", { bg = "#E8D01C", bold = true })
 
 a.nvim_set_hl(0, "TreesitterContext", { bg = colors.grey })
 

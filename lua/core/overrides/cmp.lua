@@ -22,6 +22,7 @@ cmp.setup {
     { name = 'path' },
     { name = 'buffer', keyword_length = 3, max_item_count = 7 },
     { name = 'calc' },
+    { name = 'neorg' },
   }),
   window = {
     completion = {
@@ -50,7 +51,7 @@ cmp.setup {
         Enum = 'E#',
         Keyword = '$1',
         Color = '  ',
-        File = '  ',
+        File = '#`',
         Reference = '  ',
         Folder = '  ',
         EnumMember = '  ',
