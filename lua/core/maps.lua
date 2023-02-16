@@ -9,17 +9,11 @@ a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", opts)
 -- esc to go to normal mode in term bufers
 a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", opts)
 
--- open Trouble buffer
-a.nvim_set_keymap("n", "<leader>tt",
-  "<cmd>TroubleToggle document_diagnostics<CR>", opts)
-a.nvim_set_keymap("n", "<leader>td", "<cmd>TodoTrouble<CR>", opts)
-
--- dismiss notifications
-a.nvim_set_keymap("n", "<leader>nd", "", { callback = require('notify').dismiss })
-
 -- open file viewer
 a.nvim_set_keymap("n", "<leader>fo", ":Ex<CR>", opts)
 a.nvim_set_keymap("n", "<leader>fs", ":Sex<CR>", opts)
+a.nvim_set_keymap("n", "<leader>fh", ":Hex<CR>", opts)
+a.nvim_set_keymap("n", "<leader>fv", ":Vex<CR>", opts)
 
 -- clear search
 a.nvim_set_keymap("n", "<ESC>", ":nohlsearch<Bar>:echo<CR>", opts)
@@ -37,6 +31,33 @@ a.nvim_set_keymap("n", "<C-u>", "<C-u>zz", opts)
 
 -- execute order 111
 a.nvim_set_keymap("n", "<leader>x", "<cmd>!chmod +x %<CR>", opts)
+
+-- add some keybinds to the file view
+a.nvim_create_autocmd('FileType', {
+  pattern = 'netrw',
+  callback = function()
+    local bind = function(lhs, rhs)
+      vim.keymap.set('n', lhs, rhs, { remap = true, buffer = true })
+    end
+    bind('h', '-^') -- Go up a directory
+    bind('l', '<CR>') -- Go down a directory / open a file
+    bind('.', 'gh') -- Toggle dotfiles
+    bind('P', '<C-w>z') -- Close preview window
+    bind('<ESC>', '<cmd>q<CR>') -- Close netrw
+  end
+})
+
+-- plugin related binds
+-- better indenting
+a.nvim_set_keymap('i', '<tab>', '<cmd>lua require("intellitab").indent()<CR>', opts)
+
+-- open Trouble buffer
+a.nvim_set_keymap("n", "<leader>tt",
+"<cmd>TroubleToggle document_diagnostics<CR>", opts)
+a.nvim_set_keymap("n", "<leader>td", "<cmd>TodoTrouble<CR>", opts)
+
+-- dismiss notifications
+a.nvim_set_keymap("n", "<leader>nd", "", { callback = require('notify').dismiss })
 
 -- resizing splits 
 a.nvim_set_keymap("n", '<C-h>', "<cmd>SmartResizeLeft<CR>", opts)
@@ -58,24 +79,28 @@ a.nvim_set_keymap('n', '<leader>su', '<cmd>Telescope undo<CR>', opts)
 a.nvim_set_keymap('n', '<leader>sd', '<cmd>Telescope diagnostics<CR>', opts)
 a.nvim_set_keymap('n', '<leader>sn', '<cmd>Telescope notify<CR>', opts)
 
--- resource snippets
+-- treesitter
+a.nvim_set_keymap('n', '<leader>j', '<cmd>TSJToggle<CR>', opts)
+
+-- re-source snippets
 a.nvim_set_keymap('n', '<leader><leader>s', '<cmd>source ~/.config/nvim/lua/core/snippets/init.lua<CR>', opts)
 
--- auto comand keybinds
--- add some keybinds to the file view
-a.nvim_create_autocmd('FileType', {
-  pattern = 'netrw',
-  callback = function()
-    local bind = function(lhs, rhs)
-      vim.keymap.set('n', lhs, rhs, {remap = true, buffer = true})
-    end
-    bind('h', '-^') -- Go up a directory
-    bind('l', '<CR>') -- Go down a directory / open a file
-    bind('.', 'gh') -- Toggle dotfiles
-    bind('P', '<C-w>z') -- Close preview window
-    bind('<ESC>', '<cmd>q<CR>') -- Close netrw
-  end
-})
+-- hover
+vim.keymap.set('n', '<S-tab>', require("hover").hover_select, opts)
+
+-- lsp diagnostics float
+a.nvim_set_keymap('n', '<tab>', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+
+-- essentials
+a.nvim_set_keymap('n', '<leader>eu', '<cmd>lua require("essentials").go_to_url()<CR>', opts)
+a.nvim_set_keymap('n', '<leader>ec', '<cmd>lua require("essentials").cheat_sh()<CR>', opts)
+
+-- return to home screen
+a.nvim_set_keymap('n', '<leader>gh', '<cmd>Alpha<CR>', opts)
+
+-- highlighting
+a.nvim_set_keymap("v", "<leader>ha", ":<c-u>HSHighlight 1<CR>", opts)
+a.nvim_set_keymap("v", "<leader>hc", ":<c-u>HSRmHighlight<CR>", opts)
 
 -- vbox note taking
 function _G.Toggle_venn()

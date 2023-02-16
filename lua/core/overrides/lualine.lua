@@ -68,6 +68,10 @@ local function diff_source()
   end
 end
 
+local function maximize_status()
+  return vim.t.maximized and '[M]' or '[]='
+end
+
 require('lualine').setup {
   options = {
     icons_enabled = false,
@@ -85,20 +89,20 @@ require('lualine').setup {
     always_divide_middle = false,
     globalstatus = true,
     refresh = {
-      statusline = 100,
+      statusline = 500,
       tabline = 1000,
       winbar = 1000,
     }
   },
   sections = {
-    lualine_a = {'mode'},
-    lualine_b = {
+    lualine_a = {
+      { 'mode' },
       { 'filetype',
         color = { fg = colors.white, bg = colors.grey },
       },
       { 'filename',
         filestatus = true,
-        path = 1,
+        path = 0,
 
         symbols = {
           modified = '[+]',
@@ -108,18 +112,21 @@ require('lualine').setup {
         }
       }
     },
-    lualine_c = { { 'diff', source = diff_source } },
+    lualine_b = {},
+    lualine_c = {
+      { 'diff',
+        source = diff_source,
+      },
+    },
     lualine_x = {
       { 'fileformat',
         color = { gui = 'bold' }
       }
     },
-    lualine_y = {'progress'},
-    lualine_z = {
-      { 'location',
-        padding = 1,
-      }
-    }
+    lualine_y = {
+      { maximize_status },
+    },
+    lualine_z = { 'progress' }
   },
   inactive_sections = {
     lualine_x = {'location'},

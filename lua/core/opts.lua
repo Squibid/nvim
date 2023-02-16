@@ -1,10 +1,3 @@
-o = vim.opt
-g = vim.g
-a = vim.api
-cmd = vim.cmd
-
-g.mapleader = " "
-
 ---------------
 -- better ui --
 ---------------
@@ -33,18 +26,18 @@ o.tabstop = 2
 o.shiftwidth = 2
 o.softtabstop = -1 -- If negative, shiftwidth value is used
 
+-- spelling
+o.spelllang = { 'en_us' }
+
 -- colors
 o.termguicolors = true
 cmd('colorscheme jellybeans-nvim')
 
--- diagnostics
-vim.lsp.handlers["textDocument/publishDiagnostics"] =
-  vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics,
-  {
-    virtual_text = { prefix = '*' },
-  }
-)
+-- diagnostics w/o virtual text
+vim.diagnostic.config({
+  underline = true,
+  virtual_text = false
+})
 
 colors = {
   black  = '#000000',
@@ -60,6 +53,34 @@ colors = {
   green  = '#98C379',
   blue   = '#61AFEF',
   purple = '#C678DD',
+}
+
+lspicons = {
+  Text = 'Tx',
+  Snippet = '<>',
+  Method = '  ',
+  Function = '{}',
+  Constructor = '  ',
+  Field = '""',
+  Variable = 'x=',
+  Class = '~{',
+  Interface = '.h',
+  Module = '  ',
+  Property = '@p',
+  Unit = '  ',
+  Value = '  ',
+  Enum = 'E#',
+  Keyword = '$1',
+  Color = '  ',
+  File = '#`',
+  Reference = '  ',
+  Folder = '[/',
+  EnumMember = '  ',
+  Constant = '  ',
+  Struct = '  ',
+  Event = '  ',
+  Operator = '%*',
+  TypeParameter = '  ',
 }
 
 -- width line
@@ -104,9 +125,18 @@ g.netrw_localcopydircmd = 'cp -r'
 g.netrw_winsize = 30
 g.netrw_liststyle = 1
 
+-----------------------
+-- language settings --
+-----------------------
+g.c_syntax_for_h = true -- treat c header files as c files instead of c++ files
+
 ----------------
 -- highlights --
 ----------------
+-- transparent background
+-- a.nvim_set_hl(0, "Normal", { bg = "" })
+
+--
 a.nvim_set_hl(0, "ColorColumn", { bg = colors.grey }) -- color column
 a.nvim_set_hl(0, "Pmenu", { bg = colors.black2 })
 a.nvim_set_hl(0, "PmenuSel", { bg = colors.grey2 })
@@ -151,8 +181,8 @@ a.nvim_set_hl(0, "CmpItemKindProperty", { bg = "#4FBF63", bold = true })
 a.nvim_set_hl(0, "CmpItemKindInterface", { bg = "#1e90ff", bold = true })
 a.nvim_set_hl(0, "CmpItemKindClass", { bg = "#4D4C5C", bold = true })
 a.nvim_set_hl(0, "CmpItemKindFile", { bg = "#E8D01C", bold = true })
-
-a.nvim_set_hl(0, "TreesitterContext", { bg = colors.grey })
+a.nvim_set_hl(0, "CmpItemKindFolder", { bg = "#E8D01C", bold = true })
+a.nvim_set_hl(0, "CmpItemKindOperator", { bg = "#E06C75", bold = true })
 
 -- telescope
 a.nvim_set_hl(0, "TelescopeMatching", { bg = colors.black3 })

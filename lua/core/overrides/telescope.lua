@@ -1,8 +1,6 @@
 local telescope = require('telescope')
 local actions = require('telescope.actions')
 
-telescope.load_extension('undo')
-telescope.load_extension('file_browser')
 telescope.setup {
   defaults = {
     borderchars = { " ", " ", " ", " ", " ", " ", " ", " " },
@@ -27,6 +25,8 @@ telescope.setup {
     },
   }
 }
+telescope.load_extension('undo')
+telescope.load_extension('file_browser')
 
 a.nvim_create_autocmd('User', {
   pattern = 'TelescopePreviewerLoaded',

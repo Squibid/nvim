@@ -68,9 +68,7 @@ a.nvim_create_autocmd('FileType', {
 
 -- disable extra tildas in certain files
 a.nvim_create_autocmd('FileType', {
-  pattern = {
-    'alpha'
-  },
+  pattern = '*',
   command = 'hi NonText guifg=bg'
 })
 

@@ -34,33 +34,7 @@ cmp.setup {
   formatting = {
     fields = { "kind", "abbr", "menu" },
     format = function(entry, vim_item)
-      local kind_icons = {
-        Text = 'Tx',
-        Snippet = '<>',
-        Method = '  ',
-        Function = '{}',
-        Constructor = '  ',
-        Field = '""',
-        Variable = 'x=',
-        Class = '~{',
-        Interface = '.h',
-        Module = '  ',
-        Property = '@p',
-        Unit = '  ',
-        Value = '  ',
-        Enum = 'E#',
-        Keyword = '$1',
-        Color = '  ',
-        File = '#`',
-        Reference = '  ',
-        Folder = '  ',
-        EnumMember = '  ',
-        Constant = '  ',
-        Struct = '  ',
-        Event = '  ',
-        Operator = '  ',
-        TypeParameter = '  ',
-      }
+      local kind_icons = lspicons
       local menu_items = {
         buffer = "buffer",
         nvim_lsp = "LSP",

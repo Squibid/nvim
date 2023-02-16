@@ -1,5 +1,6 @@
 require('nvim-treesitter.configs').setup {
-  ensure_installed = { 'help',
+  ensure_installed = {
+    'help',
     'c',
     'lua',
     'norg',

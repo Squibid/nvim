@@ -12,6 +12,7 @@ codewindow.setup({
     "vim",
     "Trouble",
     "alpha",
+    "NvimTree",
   },
 })
 codewindow.apply_default_keybinds()

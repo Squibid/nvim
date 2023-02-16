@@ -9,8 +9,9 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-  { 'rcarriga/nvim-notify' },
+require('lazy').setup{
+  { 'notjedi/nvim-rooter.lua', config = true },
+  { 'tamton-aquib/essentials.nvim' },
 
 	-- only the most useless plugins (some of these are also ui related)
 	{ 'goolord/alpha-nvim' },
@@ -19,6 +20,7 @@ require('lazy').setup({
 	{ 'kwakzalver/duckytype.nvim', config = true }, -- like monkey type
 	{ 'melkster/modicator.nvim' },
 	{ 'nyngwang/murmur.lua', config = true },
+  { 'potamides/pantran.nvim' },
 	--
 
   -- colorscheme / ui
@@ -28,6 +30,13 @@ require('lazy').setup({
     priority = 1000,
   },
   { 'nvim-lualine/lualine.nvim' },
+  { 'utilyre/barbecue.nvim',
+    version = '*',
+    dependencies = {
+      'SmiteshP/nvim-navic',
+    },
+    config = true,
+  },
   { 'lukas-reineke/indent-blankline.nvim' },
   { 'lewis6991/gitsigns.nvim', config = true, },
   { 'chentoast/marks.nvim', config = true, },
@@ -35,9 +44,11 @@ require('lazy').setup({
   { 'mrjones2014/smart-splits.nvim',
     dependencies = { 'kwkarlwang/bufresize.nvim', config = true, },
   },
+  { 'rcarriga/nvim-notify' },
+  { 'declancm/maximize.nvim', config = true, },
   --
 
-  -- careful the following plugins might be considered useful procede with caution
+  -- careful the following plugins might be considered useful proceed with caution
   -- muh fzf
   { 'nvim-telescope/telescope.nvim',
     version = '0.1.*',
@@ -45,16 +56,19 @@ require('lazy').setup({
       'nvim-telescope/telescope-file-browser.nvim',
       'nvim-lua/plenary.nvim',
       'debugloop/telescope-undo.nvim',
-      'AckslD/nvim-neoclip.lua'
+      'AckslD/nvim-neoclip.lua',
     }
   },
+  --
+
+  -- movement
+  { 'pta2002/intellitab.nvim' },
   --
 
   -- debugging
   { 'numToStr/Comment.nvim', config = true, },
   { 'folke/trouble.nvim' },
   { 'folke/todo-comments.nvim', config = true, },
-  { 'andrewferrier/debugprint.nvim', config = true },
   --
 
   -- notes
@@ -63,17 +77,22 @@ require('lazy').setup({
     version = '*',
     ft = 'norg',
     build = ':Neorg sync-parsers',
-    dependencies = 'nvim-lua/plenary.nvim',
   },
   { 'shortcuts/no-neck-pain.nvim',
     version = '*',
   },
+  { 'ellisonleao/glow.nvim' },
+  { 'Pocco81/high-str.nvim' },
   --
 
   -- cmp, lsp and syntax
   { 'nvim-treesitter/nvim-treesitter',
-    dependencies = 'nvim-treesitter/nvim-treesitter-context'
+    dependencies = {
+      { 'm-demare/hlargs.nvim', config = true },
+      'Wansmer/treesj',
+    }
   },
+  { 'lewis6991/hover.nvim' },
   { 'nvchad/nvim-colorizer.lua' },
   { 'VonHeikemen/lsp-zero.nvim' },
   { 'hrsh7th/nvim-cmp',
@@ -86,7 +105,6 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
       'lukas-reineke/cmp-under-comparator',
       'onsails/lspkind.nvim',
-      'mrded/nvim-lsp-notify',
     },
   },
   { 'L3MON4D3/LuaSnip',
@@ -99,4 +117,4 @@ require('lazy').setup({
   { 'williamboman/mason-lspconfig.nvim' },
   { 'windwp/nvim-autopairs', config = true, },
   --
-})
+}
