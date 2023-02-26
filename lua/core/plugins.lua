@@ -75,11 +75,12 @@ require('lazy').setup{
   { 'numToStr/Comment.nvim', config = true, },
   { 'folke/trouble.nvim' },
   { 'folke/todo-comments.nvim', config = true, },
+  { 'akinsho/toggleterm.nvim', version = '*' },
   --
 
   -- project stuff
-  { 'sindrets/diffview.nvim', config = true },
-  { 'notjedi/nvim-rooter.lua', config = true },
+  { 'sindrets/diffview.nvim', config = true, },
+  { 'notjedi/nvim-rooter.lua', config = true, },
   --
 
   -- notes
@@ -92,7 +93,6 @@ require('lazy').setup{
   { 'shortcuts/no-neck-pain.nvim',
     version = '*',
   },
-  { 'ellisonleao/glow.nvim', config = true },
   { 'Pocco81/high-str.nvim' },
   --
 

@@ -3,8 +3,9 @@ local opts = { noremap = true, silent = true }
 -- greatest remap ever
 a.nvim_set_keymap("n", "<leader>p", "\"_dP", opts)
 
--- open term buffer
-a.nvim_set_keymap("n", "<leader>to", "<C-w>v<C-w>w:term<CR>", opts)
+-- toggle terminal buffer
+a.nvim_set_keymap("n", "<C-\\>", "<cmd>ToggleTerm size=20<CR>", opts)
+a.nvim_set_keymap("t", "<C-\\>", "<cmd>ToggleTerm<CR>", opts)
 
 -- esc to go to normal mode in term bufers
 a.nvim_set_keymap("t", "<ESC>", "<C-\\><C-n>", opts)
@@ -103,9 +104,12 @@ a.nvim_set_keymap("v", "<leader>ha", ":<c-u>HSHighlight 1<CR>", opts)
 a.nvim_set_keymap("v", "<leader>hc", ":<c-u>HSRmHighlight<CR>", opts)
 
 -- code actions + renaming
-a.nvim_set_keymap('n', '<leader>gn', '<cmd>lua require("cosmic-ui").rename()<cr>', opts)
-a.nvim_set_keymap('v', '<leader>ga', '<cmd>lua require("cosmic-ui").range_code_actions()<cr>', opts)
-a.nvim_set_keymap('n', '<leader>ga', '<cmd>lua require("cosmic-ui").code_actions()<cr>', opts)
+a.nvim_set_keymap('n', '<leader>gn', '<cmd>lua require("cosmic-ui").rename()<CR>', opts)
+a.nvim_set_keymap('v', '<leader>ga', '<cmd>lua require("cosmic-ui").range_code_actions()<CR>', opts)
+a.nvim_set_keymap('n', '<leader>ga', '<cmd>lua require("cosmic-ui").code_actions()<CR>', opts)
+
+-- glow
+a.nvim_set_keymap('n', '<leader>gl', '<cmd>lua _glow()<CR>', opts)
 
 
 -- vbox note taking
