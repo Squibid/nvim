@@ -10,12 +10,13 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup{
-  { 'notjedi/nvim-rooter.lua', config = true },
   { 'tamton-aquib/essentials.nvim' },
 
 	-- only the most useless plugins (some of these are also ui related)
 	{ 'goolord/alpha-nvim' },
-	{ 'gorbit99/codewindow.nvim' },
+  { 'petertriho/nvim-scrollbar',
+    dependencies = { 'kevinhwang91/nvim-hlslens' },
+  },
 	{ 'alec-gibson/nvim-tetris' },
 	{ 'kwakzalver/duckytype.nvim', config = true }, -- like monkey type
 	{ 'melkster/modicator.nvim' },
