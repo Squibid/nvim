@@ -77,6 +77,11 @@ require('lazy').setup{
   { 'folke/todo-comments.nvim', config = true, },
   --
 
+  -- project stuff
+  { 'sindrets/diffview.nvim', config = true },
+  { 'notjedi/nvim-rooter.lua', config = true },
+  --
+
   -- notes
   { 'jbyuki/venn.nvim' },
   { 'nvim-neorg/neorg',
@@ -87,7 +92,7 @@ require('lazy').setup{
   { 'shortcuts/no-neck-pain.nvim',
     version = '*',
   },
-  { 'ellisonleao/glow.nvim' },
+  { 'ellisonleao/glow.nvim', config = true },
   { 'Pocco81/high-str.nvim' },
   --
 
