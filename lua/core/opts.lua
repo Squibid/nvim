@@ -53,6 +53,7 @@ colors = {
   green  = '#98C379',
   blue   = '#61AFEF',
   purple = '#C678DD',
+  pink   = '#704A5A',
 }
 
 lspicons = {
