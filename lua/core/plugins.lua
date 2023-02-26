@@ -46,6 +46,10 @@ require('lazy').setup{
   },
   { 'rcarriga/nvim-notify' },
   { 'declancm/maximize.nvim', config = true, },
+  { 'CosmicNvim/cosmic-ui',
+    dependencies = { 'MunifTanjim/nui.nvim' },
+    config = true,
+  },
   --
 
   -- careful the following plugins might be considered useful proceed with caution

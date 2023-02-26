@@ -102,6 +102,12 @@ a.nvim_set_keymap('n', '<leader>gh', '<cmd>Alpha<CR>', opts)
 a.nvim_set_keymap("v", "<leader>ha", ":<c-u>HSHighlight 1<CR>", opts)
 a.nvim_set_keymap("v", "<leader>hc", ":<c-u>HSRmHighlight<CR>", opts)
 
+-- code actions + renaming
+a.nvim_set_keymap('n', '<leader>gn', '<cmd>lua require("cosmic-ui").rename()<cr>', opts)
+a.nvim_set_keymap('v', '<leader>ga', '<cmd>lua require("cosmic-ui").range_code_actions()<cr>', opts)
+a.nvim_set_keymap('n', '<leader>ga', '<cmd>lua require("cosmic-ui").code_actions()<cr>', opts)
+
+
 -- vbox note taking
 function _G.Toggle_venn()
   local venn_enabled = vim.inspect(vim.b.venn_enabled)
