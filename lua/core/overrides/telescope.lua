@@ -23,10 +23,18 @@ telescope.setup {
         ["G"] = actions.move_to_bottom,
       },
     },
+    extensions = {
+      ["ui-select"] = {
+        require("telescope.themes").get_dropdown {
+          -- even more opts
+        }
+      }
+    },
   }
 }
 telescope.load_extension('undo')
 telescope.load_extension('file_browser')
+telescope.load_extension('ui-select')
 
 a.nvim_create_autocmd('User', {
   pattern = 'TelescopePreviewerLoaded',

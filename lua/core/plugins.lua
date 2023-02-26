@@ -59,6 +59,7 @@ require('lazy').setup{
     version = '0.1.*',
     dependencies = {
       'nvim-telescope/telescope-file-browser.nvim',
+      'nvim-telescope/telescope-ui-select.nvim',
       'nvim-lua/plenary.nvim',
       'debugloop/telescope-undo.nvim',
       'AckslD/nvim-neoclip.lua',
