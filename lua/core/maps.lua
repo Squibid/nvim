@@ -99,6 +99,24 @@ a.nvim_set_keymap('n', '<leader>ec', '<cmd>lua require("essentials").cheat_sh()<
 -- return to home screen
 a.nvim_set_keymap('n', '<leader>gh', '<cmd>Alpha<CR>', opts)
 
+-- true zen
+local truezen = require('true-zen')
+local keymap = vim.keymap
+
+keymap.set('n', '<leader>zn', function()
+  local first = 0
+  local last = vim.api.nvim_buf_line_count(0)
+  truezen.narrow(first, last)
+end, { noremap = true })
+keymap.set('v', '<leader>zn', function()
+  local first = vim.fn.line('v')
+  local last = vim.fn.line('.')
+  truezen.narrow(first, last)
+end, { noremap = true })
+a.nvim_set_keymap('n', '<leader>zf', '<cmd>lua require("true-zen.focus").toggle()<CR>', opts)
+a.nvim_set_keymap('n', '<leader>zm', '<cmd>lua require("true-zen.minimalist").toggle()<CR>', opts)
+a.nvim_set_keymap('n', '<leader>za', '<cmd>lua require("true-zen.ataraxis").toggle()<CR>', opts)
+
 -- highlighting
 a.nvim_set_keymap("v", "<leader>ha", ":<c-u>HSHighlight 1<CR>", opts)
 a.nvim_set_keymap("v", "<leader>hc", ":<c-u>HSRmHighlight<CR>", opts)
@@ -110,7 +128,6 @@ a.nvim_set_keymap('n', '<leader>ga', '<cmd>lua require("cosmic-ui").code_actions
 
 -- glow
 a.nvim_set_keymap('n', '<leader>gl', '<cmd>lua _glow()<CR>', opts)
-
 
 -- vbox note taking
 function _G.Toggle_venn()

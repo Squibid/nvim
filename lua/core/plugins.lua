@@ -46,7 +46,6 @@ require('lazy').setup{
     dependencies = { 'kwkarlwang/bufresize.nvim', config = true, },
   },
   { 'rcarriga/nvim-notify' },
-  { 'declancm/maximize.nvim', config = true, },
   { 'CosmicNvim/cosmic-ui',
     dependencies = { 'MunifTanjim/nui.nvim' },
     config = true,
@@ -90,9 +89,7 @@ require('lazy').setup{
     ft = 'norg',
     build = ':Neorg sync-parsers',
   },
-  { 'shortcuts/no-neck-pain.nvim',
-    version = '*',
-  },
+  { 'loqusion/true-zen.nvim' },
   { 'Pocco81/high-str.nvim' },
   --
 

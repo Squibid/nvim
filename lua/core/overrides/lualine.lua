@@ -69,7 +69,7 @@ local function diff_source()
 end
 
 local function maximize_status()
-  return vim.t.maximized and '[M]' or '[]='
+  return require("true-zen.focus").running and '[M]' or '[]='
 end
 
 require('lualine').setup {
