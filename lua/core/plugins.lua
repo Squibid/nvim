@@ -14,9 +14,7 @@ require('lazy').setup{
 
 	-- only the most useless plugins (some of these are also ui related)
 	{ 'goolord/alpha-nvim' },
-  { 'petertriho/nvim-scrollbar',
-    dependencies = { 'kevinhwang91/nvim-hlslens' },
-  },
+  { 'petertriho/nvim-scrollbar' },
 	{ 'alec-gibson/nvim-tetris' },
 	{ 'kwakzalver/duckytype.nvim', config = true }, -- like monkey type
 	{ 'melkster/modicator.nvim' },

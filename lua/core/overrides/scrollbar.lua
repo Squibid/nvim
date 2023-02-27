@@ -24,6 +24,5 @@ require("scrollbar").setup({
   handlers = {
     diagnostic = true,
     gitsigns = true,
-    search = true,
   }
 })
